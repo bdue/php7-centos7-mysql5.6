@@ -53,4 +53,23 @@ EOF
 systemctl enable httpd
 systemctl start httpd
 
-echo "All Done"
+#disable selinux
+sed -i 's/enforcing/disabled/g' /etc/selinux/config /etc/selinux/config
+
+#setup mysql config
+systemctl stop mysql
+rm -rf ib_logfile0 ib_logfile1
+mv /etc/my.cnf /etc/my.cnf.old
+mv ./my.cnf /etc/my.cnf
+systemctl start mysql
+
+#stop and disable firewall (only for testing)
+systemctl disable firewalld
+systemctl stop firewalld
+
+#Change ssh port to 9191 to prevent bruteforincg (needs editing)
+#sed -i 's/"#PORT 22"/"PORT 9191"/g' /etc/ssh/sshd_config /etc/ssh/sshd_config
+
+
+
+
