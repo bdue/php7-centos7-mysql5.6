@@ -2,6 +2,7 @@
 
 #install git
 yum install git -y
+yum install nano perl wget -y
 
 # install apache
 yum install httpd -y
@@ -50,33 +51,7 @@ cat << EOF > /etc/httpd/conf.d/html.conf
 </IfModule>
 EOF
 
-
-# get varnish duh!
-yum install varnish -y
-sed -i 's/VARNISH_LISTEN_PORT=6081/VARNISH_LISTEN_PORT=80/g' /etc/varnish/varnish.params
-sed -i 's/Listen 80/Listen 8080/g' /etc/httpd/conf/httpd.conf
-
-systemctl enable varnish
 systemctl enable httpd
-systemctl start varnish
 systemctl start httpd
 
-#get drush
-curl -sS https://getcomposer.org/installer | php
-mv composer.phar /usr/local/bin/composer
-composer global require drush/drush:7.*
-
-echo "export PATH=\"\$HOME/.composer/vendor/bin:\$PATH\"" >> ~/.bashrc
-source ~/.bashrc
-
-# install drush recipes
-drush dl drush_recipes -y
-drush dl drupal --destination=/var/www/ --drupal-project-rename=html -y
-
-cd /var/www/html
-drush site-install --db-url=mysql://root@localhost:22/test -y
-chmod -R 755 /var/www/html/sites/default/files/
-chown -R apache:apache /var/www/html/sites/default/files/
-exec bash
-
-echo "DUNZY!"
+echo "All Done"
